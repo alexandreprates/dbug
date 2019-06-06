@@ -1,0 +1,3 @@
+class DBug::Cli
+
+end

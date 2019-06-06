@@ -1,35 +1,41 @@
 require 'open3'
 
 module DBug
-  module Runner
+  class Runner
 
-    module_function
-
-    def call(queue, command)
+    def initialize(queue)
       @queue = queue
+    end
 
-      notify_runner_start(command)
-      Open3.popen3(command) do |stdin, stdout, stderr, thread|
-        { :out => stdout, :err => stderr }.each do |key, stream|
-          Thread.new do
-            until (!stream.closed? && line = stream.gets).nil? do
-              puts line
-            end
-          end
-        end
+    def exec(command)
+      notify_start(command)
+
+      Open3.popen3(command) do |_, stdout, stderr, thread|
+        th_read stdout
+        th_read stderr
+
         thread.join # don't exit until the external process is done
-
-        notify_runner_complete thread.value.success?
+        notify_complete thread.value.success?
       end
     end
 
-    def notify_runner_start(command)
+    private
+
+    def notify_start(command)
       @queue << { runner_start: command }
     end
 
-    def notify_runner_complete(success)
+    def notify_complete(success)
       @queue << {runner_end: success ? :success : :failure}
       success
+    end
+
+    def th_read(stream)
+      Thread.new do
+        while (!stream.closed? && line = stream.gets) do
+          puts line
+        end
+      end
     end
 
   end
