@@ -2,14 +2,25 @@
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/d_bug`. To experiment with that code, run `bin/console` for an interactive prompt.
 
+## Flow
+
+FileObserver # captura as alterações e notifica a Queue
+
+QueueObserver # recebe notificacao de file change e dispara o runner
+
+CommandRunner # executa os testes e notifica a fila com o status
+
+QueueObserver # recebe a notificacao de teste concluido e notifica via SerialDispatcher
+
+SerialComm # recebe o evento e envia a comunicacao
+
 
 # D-Bug CLI Brainstorm
 
 # CLI
  -s --serial-port=
- -w --watch=
  -e --exclude=
- -x --execute=
+ -o --only=
 
 ```
 dbug -p /dev/tty.usbserial.x -w ./spec -x 'docker exec -web bundle exec rspec spec {}'

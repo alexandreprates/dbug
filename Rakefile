@@ -8,3 +8,10 @@ Rake::TestTask.new(:test) do |t|
 end
 
 task :default => :test
+
+task :install do
+  `rm -f d_bug*.gem`
+  'sudo gem uninstall --force --all --executables d_bug'
+  `gem build d_bug.gemspec`
+  `sudo gem install d_bug`
+end

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo Starting suit
+for i in $(seq 1 10); do
+  printf .
+  sleep 1
+done
+echo success
+echo Test finished

@@ -1,3 +1,16 @@
 #!/usr/bin/env ruby
-
 require "d_bug"
+
+# Trap ^C
+Signal.trap("INT") {
+  DBug.stop
+}
+
+# Trap `Kill `
+Signal.trap("TERM") {
+  DBug.stop
+}
+
+options = DBug::CLI.parse
+DBug.call(options)
+puts "bye!"

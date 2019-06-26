@@ -1,26 +1,20 @@
 module DBug
-  class MessageHandler
+  module MessageHandler
+    extend self
 
-    attr_reader :event
+    @handlers = {}
 
-    def initialize(event, data)
-      @event = event
-      @data = data
+    def handle(event, &handler)
+      puts "[#{self.to_s}] register handler for #{event}" if DBug::DEBUG
+      !!(@handlers[event] = handler)
     end
 
-    def dispatch
-      receipt.notified(data)
-    end
+    def dispatch(event_data)
+      puts "[#{self.to_s}] dispatch #{event_data.inspect}" if DBug::DEBUG
+      event, data = event_data.flatten
+      return false unless @handlers.has_key?(event)
 
-    private
-
-    def receipt()
-      case event
-      when :runner_start, :runner_end
-        #
-      when :observe_modify
-        #
-      end
+      @handlers[event].call(data)
     end
 
   end
