@@ -45,8 +45,8 @@ module DBug
     puts "Starting d-bug!"
     @options = options
 
-    puts("running in stealth mode...") if bug.steath?
-    dbug.unknow!
+    puts("running in stealth mode...") if bug.stealth?
+    bug.unknow!
 
     queue_observer.start
     file_observer.start

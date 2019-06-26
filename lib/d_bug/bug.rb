@@ -4,7 +4,7 @@ module DBug
   class Bug
     attr_reader :port, :connected, :status
 
-    STATUS = %i{unknow success failure}.freeze
+    STATUS = %i{off blink success failure unknow}.freeze
 
     def initialize(port)
       @port = port
@@ -26,13 +26,13 @@ module DBug
     def success!
       printf "suit returned success, "
       @status = :success
-      notify
+      notify(true)
     end
 
     def failure!
       printf "suit returned failure, "
       @status = :failure
-      notify
+      notify(true)
     end
 
     def blinking(&block)
@@ -47,23 +47,24 @@ module DBug
 
     private
 
-    def notify
-      status_code = STATUS.index(@status)
-      puts "[#{self.class.to_s}] Send do bug #{status_code}" if DBug::DEBUG
+    def notify(feedback = false, status = nil)
+      status_code = STATUS.index(status || @status)
+      puts "[#{self.class.to_s}] Receive notification update" if DBug::DEBUG
 
       if serial
-        puts "notifing bug!"
-        serial.write status_code
+        puts "notifing bug!" if feedback
+        result = serial.write(status_code)
+        puts "[#{self.class.to_s}] Send to bug #{status_code} => #{result}" if DBug::DEBUG
       else
-        puts "running in steath mode nobody will be notified!"
+        puts "running in steath mode nobody will be notified!" if feedback
       end
     end
 
     def blink_thread
       Thread.new do
         loop do
-          notify
-          sleep 2
+          notify(false, :blink)
+          sleep 3
         end
       end
     end
