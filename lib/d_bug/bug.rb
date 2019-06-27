@@ -64,7 +64,7 @@ module DBug
       Thread.new do
         loop do
           notify(false, :blink)
-          sleep 3
+          sleep 2
         end
       end
     end

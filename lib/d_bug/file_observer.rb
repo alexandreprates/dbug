@@ -54,7 +54,11 @@ module DBug
       return unless valid?(filename)
 
       @event_filename = filename
-      DBug.queue << { file_changed: filename }
+      if DBug::CommandRunner.running?
+        puts "XXXX" * 1000
+      else
+        DBug.queue << { file_changed: filename }
+      end
     end
 
     def valid?(filename)

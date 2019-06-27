@@ -16,12 +16,7 @@ module DBug
 
   MessageHandler.handle(:file_changed) { |param|
     puts "file #{param.inspect} changed running suit...\n\n"
-
-    bug.blinking do
-      CommandRunner.new(@options.command).call(param)
-      file_observer.event_filename = nil
-    end
-
+    bug.blinking { CommandRunner.new(@options.command).call(param) }
     puts "\n"
   }
 
@@ -54,8 +49,8 @@ module DBug
 
   def stop
     puts "\nStopping..."
-    bug.off!
     file_observer.stop && queue_observer.close
+    bug.off!
   end
 
   def queue
@@ -72,6 +67,10 @@ module DBug
 
   def queue_observer
     @queue_observer ||= QueueObserver.new MessageHandler
+  end
+
+  def semaphore
+    @semaphore ||= Mutex.new
   end
 
 end

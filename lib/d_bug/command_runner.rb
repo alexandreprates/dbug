@@ -2,6 +2,17 @@ require 'open3'
 
 module DBug
   class CommandRunner
+    class << self
+
+      def running?
+        DBug.semaphore.synchronize { !!@running }
+      end
+
+      def running!(value)
+        DBug.semaphore.synchronize { @running = value }
+      end
+
+    end
 
     REPLACE_STRING = "{}".freeze
 
@@ -11,18 +22,22 @@ module DBug
     end
 
     def call(filename, silence = false)
+      self.class.running!(true)
       notify_start
       puts "[#{self.class.to_s}] running #{inject_filename(filename).inspect}" if DBug::DEBUG
       Open3.popen3(*inject_filename(filename)) do |_, stdout, stderr, thread|
+        @process = thread
         th_read stdout unless silence
         th_read stderr unless silence
         thread.join # don't exit until the external process is done
         puts "[#{self.class.to_s}] running complete" if DBug::DEBUG
-        notify_complete(thread.value.success?)
       end
     rescue Errno::ENOENT => e
       puts "Can not run: #{readable_command}"
       exit 2
+    ensure
+      notify_complete(@process.value.success?)
+      self.class.running!(false)
     end
 
     private
