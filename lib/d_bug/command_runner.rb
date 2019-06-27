@@ -5,7 +5,7 @@ module DBug
     class << self
 
       def running?
-        DBug.semaphore.synchronize { !!@running }
+        !!@running
       end
 
       def running!(value)

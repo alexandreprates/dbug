@@ -10,6 +10,15 @@ module DBug
       def notifier
         @notifier ||= INotify::Notifier.new
       end
+
+      def last_event=(event)
+        DBug.semaphore.synchronize { @last_event = event }
+      end
+
+      def last_event
+        DBug.semaphore.synchronize { @last_event }
+      end
+
     end
 
     attr_reader   :path
@@ -51,14 +60,21 @@ module DBug
     end
 
     def notify(filename)
-      return unless valid?(filename)
+      if flood?(filename)
+        puts "[#{self.class.to_s}] flood event #{filename}" if DBug::DEBUG
+        return
+      end
+
+      self.class.last_event = [Time.now.to_i, filename]
 
       @event_filename = filename
-      if DBug::CommandRunner.running?
-        puts "XXXX" * 1000
-      else
-        DBug.queue << { file_changed: filename }
-      end
+      puts "[#{self.class.to_s}] Ignored event #{filename}, suit is running" if DBug::CommandRunner.running? && DBug::DEBUG
+      DBug.queue << { file_changed: filename } unless DBug::CommandRunner.running?
+    end
+
+    def flood?(filename)
+      event_timestamp, event_filename = self.class.last_event
+      !!(event_timestamp && event_filename == filename && event_timestamp > (Time.now.to_i - 5))
     end
 
     def valid?(filename)
