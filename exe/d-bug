@@ -13,4 +13,4 @@ Signal.trap("TERM") {
 
 options = DBug::CLI.parse
 DBug.call(options)
-puts "bye!"
+puts "bye bug!"

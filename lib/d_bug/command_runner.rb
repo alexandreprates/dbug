@@ -36,7 +36,7 @@ module DBug
       puts "Can not run: #{readable_command}"
       exit 2
     ensure
-      notify_complete(@process.value.success?)
+      notify_complete(@process.value&.success?)
       self.class.running!(false)
     end
 

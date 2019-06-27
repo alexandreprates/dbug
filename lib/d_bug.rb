@@ -16,8 +16,8 @@ module DBug
 
   MessageHandler.handle(:file_changed) { |param|
     puts "file #{param.inspect} changed running suit...\n\n"
+    puts "#{'-' * 120}\n#{'TEST SUIT STDOUT'.center(120)}\n#{'-' * 120}\n"
     bug.blinking { CommandRunner.new(@options.command).call(param) }
-    puts "\n"
   }
 
   # MessageHandler.handle(:exec_start) { |param|
@@ -25,13 +25,13 @@ module DBug
   # }
 
   MessageHandler.handle(:exec_success) { |param|
+    puts "#{'-' * 120}\n\n\n"
     bug.success!
-    puts "--"
   }
 
   MessageHandler.handle(:exec_failure) { |param|
+    puts "#{'-' * 120}\n\n\n"
     bug.failure!
-    puts "--"
   }
 
   module_function
@@ -49,8 +49,8 @@ module DBug
 
   def stop
     puts "\nStopping..."
-    file_observer.stop && queue_observer.close
     bug.off!
+    file_observer.stop && queue_observer.close
   end
 
   def queue

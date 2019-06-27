@@ -4,7 +4,7 @@ module DBug
   class Bug
     attr_reader :port, :connected, :status
 
-    STATUS = %i{off blink success failure unknow}.freeze
+    PROTOCOL_STATUS = %i{off blink success failure unknow}.freeze
 
     def initialize(port)
       @port = port
@@ -14,24 +14,23 @@ module DBug
     end
 
     def off!
-      @status = :off
-      notify
+      notify(false, :off)
     end
 
     def unknow!
-      @status = :unknow
+      set_status :unknow
       notify
     end
 
     def success!
       printf "suit returned success, "
-      @status = :success
+      set_status :success
       notify(true)
     end
 
     def failure!
       printf "suit returned failure, "
-      @status = :failure
+      set_status :failure
       notify(true)
     end
 
@@ -47,8 +46,12 @@ module DBug
 
     private
 
+    def set_status(status)
+      DBug.semaphore.synchronize { @status = status }
+    end
+
     def notify(feedback = false, status = nil)
-      status_code = STATUS.index(status || @status)
+      status_code = PROTOCOL_STATUS.index(status || @status)
       puts "[#{self.class.to_s}] Receive notification update" if DBug::DEBUG
 
       if serial
