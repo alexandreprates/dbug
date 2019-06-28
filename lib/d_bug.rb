@@ -25,12 +25,12 @@ module DBug
   # }
 
   MessageHandler.handle(:exec_success) { |param|
-    puts "#{'-' * 120}\n\n\n"
+    puts "#{'-' * 120}\n\n"
     bug.success!
   }
 
   MessageHandler.handle(:exec_failure) { |param|
-    puts "#{'-' * 120}\n\n\n"
+    puts "#{'-' * 120}\n\n"
     bug.failure!
   }
 
