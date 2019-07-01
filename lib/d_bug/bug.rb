@@ -56,7 +56,7 @@ module DBug
 
       if serial
         puts "notifing bug!" if feedback
-        result = serial.write(status_code)
+        result = serial.write(status_code.chr)
         puts "[#{self.class.to_s}] Send to bug #{status_code} => #{result}" if DBug::DEBUG
       else
         puts "running in steath mode nobody will be notified!" if feedback
