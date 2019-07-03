@@ -1,10 +1,11 @@
 require_relative "d_bug/version"
+
+require_relative "d_bug/bug"
 require_relative "d_bug/cli"
 require_relative "d_bug/command_runner"
 require_relative "d_bug/file_observer"
 require_relative "d_bug/message_handler"
 require_relative "d_bug/queue_observer"
-require_relative "d_bug/bug"
 
 STDOUT.sync = true
 
@@ -58,7 +59,11 @@ module DBug
   end
 
   def bug
-    @bug = Bug.new @options.port
+    @bug ||= Bug.new
+  end
+
+  def notifier
+    @notifier ||= INotify::Notifier.new
   end
 
   def file_observer

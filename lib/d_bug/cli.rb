@@ -9,7 +9,7 @@ module DBug
       options = {}
       parser = OptionParser.new do |opts|
         opts.banner = "Usage: dbug [options] PATH COMMAND"
-        opts.on("-s", "--serial-port=PATH", "Path to USB Serial Port like /dev/ttyUSB0") { |port| options[:port] = port }
+        # opts.on("-s", "--serial-port=PATH", "Path to USB Serial Port like /dev/ttyUSB0") { |port| options[:port] = port }
         opts.on("-e", "--exclude=PATTERN", "Ignore file pattern") { |exclude| options[:exclude] = exclude }
         opts.on("-o", "--only=PATTERN", "Accept only file pattern") { |only| options[:only] = only }
         opts.on("-h", "--help", "Prints this help") do

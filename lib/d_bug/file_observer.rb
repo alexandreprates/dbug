@@ -7,9 +7,6 @@ module DBug
   class FileObserver
 
     class << self
-      def notifier
-        @notifier ||= INotify::Notifier.new
-      end
 
       def last_event=(event)
         DBug.semaphore.synchronize { @last_event = event }
@@ -30,7 +27,8 @@ module DBug
       @exclude = exclude
       @event_filename = nil
 
-      FileObserver.notifier.watch path, :modify, :recursive, &method(:handle)
+      DBug.notifier.watch path,    :modify, :recursive, &method(:handle)
+      DBug.notifier.watch "/dev/", :create, &method(:handle_usb)
     rescue Errno::ENOENT => e
       puts e
       exit 1
@@ -38,16 +36,16 @@ module DBug
 
     def start
       puts "monitoring #{path}"
-      FileObserver.notifier.run
+      DBug.notifier.run
     end
 
     def wait_event
       puts "monitoring #{path}"
-      FileObserver.notifier.process
+      DBug.notifier.process
     end
 
     def stop
-      FileObserver.notifier.stop
+      DBug.notifier.stop
     rescue ThreadError
       # piff `synchronize': can't be called from trap context
     end
@@ -57,6 +55,10 @@ module DBug
     def handle(event)
       filename = event.absolute_name
       notify(filename) if valid?(filename)
+    end
+
+    def handle_usb(event)
+      DBug.bug.reconnect! if event.absolute_name == "/dev/serial"
     end
 
     def notify(filename)
