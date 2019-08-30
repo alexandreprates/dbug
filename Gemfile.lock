@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    d_bug (0.1.0.1561553202)
+    d_bug (0.1.0.1567170565)
       rb-inotify
       rubyserial
 
@@ -26,4 +26,4 @@ DEPENDENCIES
   rake (~> 10.0)
 
 BUNDLED WITH
-   2.0.1
+   2.0.2

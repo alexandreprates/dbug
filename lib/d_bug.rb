@@ -5,7 +5,7 @@ require_relative "d_bug/cli"
 require_relative "d_bug/command_runner"
 require_relative "d_bug/file_observer"
 require_relative "d_bug/message_handler"
-require_relative "d_bug/queue_observer"
+require_relative "d_bug/event_reactor"
 
 STDOUT.sync = true
 
@@ -44,14 +44,14 @@ module DBug
     puts("running in stealth mode...") if bug.stealth?
     bug.unknow!
 
-    queue_observer.start
+    event_reactor.start
     file_observer.start
   end
 
   def stop
     puts "\nStopping..."
     bug.off!
-    file_observer.stop && queue_observer.close
+    file_observer.stop && event_reactor.close
   end
 
   def queue
@@ -70,8 +70,8 @@ module DBug
     @file_observer ||= FileObserver.new @options.path, @options.only, @options.exclude
   end
 
-  def queue_observer
-    @queue_observer ||= QueueObserver.new MessageHandler
+  def event_reactor
+    @event_reactor ||= EventReactor.new queue: queue, handler: MessageHandler
   end
 
   def semaphore
