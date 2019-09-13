@@ -12,32 +12,38 @@ STDOUT.sync = true
 module DBug
   class Error < StandardError; end
 
-  # DEBUG = true
-  DEBUG = false
+  def self.debug?
+    @options&.debug
+  end
 
-  MessageHandler.handle(:file_changed) { |param|
+  MessageHandler.handle(:file_changed) do |param|
     puts "file #{param.inspect} changed running suit...\n\n"
     puts "#{'-' * 120}\n#{'TEST SUIT STDOUT'.center(120)}\n#{'-' * 120}\n"
     bug.blinking { CommandRunner.new(@options.command).call(param) }
-  }
+  end
 
   # MessageHandler.handle(:exec_start) { |param|
   #   #code
   # }
 
-  MessageHandler.handle(:exec_success) { |param|
+  MessageHandler.handle(:exec_success) do |param|
     puts "#{'-' * 120}\n\n"
     bug.success!
-  }
+  end
 
-  MessageHandler.handle(:exec_failure) { |param|
+  MessageHandler.handle(:exec_failure) do |param|
     puts "#{'-' * 120}\n\n"
     bug.failure!
-  }
+  end
 
   module_function
 
   def call(options)
+    if options[:version]
+      puts "d-bug: #{DBug::VERSION}"
+      exit 0
+    end
+
     puts "Starting d-bug!"
     @options = options
 

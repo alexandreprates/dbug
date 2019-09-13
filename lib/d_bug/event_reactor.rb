@@ -13,7 +13,7 @@ module DBug
     def start(block = false)
       Thread.new do
         while event = @queue.pop do
-          puts "[#{self.class.to_s}] Queue dispatch #{event.inspect}" if DBug::DEBUG
+          puts "[#{self.class.to_s}] Queue dispatch #{event.inspect}" if DBug.debug?
           deliver(event)
         end
       end

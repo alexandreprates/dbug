@@ -5,12 +5,12 @@ module DBug
     @handlers = {}
 
     def handle(event, &handler)
-      puts "[#{self.to_s}] register handler for #{event}" if DBug::DEBUG
+      puts "[#{self.to_s}] register handler for #{event}" if DBug.debug?
       !!(@handlers[event] = handler)
     end
 
     def dispatch(event_data)
-      puts "[#{self.to_s}] dispatch #{event_data.inspect}" if DBug::DEBUG
+      puts "[#{self.to_s}] dispatch #{event_data.inspect}" if DBug.debug?
       event, data = event_data.flatten
       return false unless @handlers.has_key?(event)
 

@@ -17,20 +17,20 @@ module DBug
     REPLACE_STRING = "{}".freeze
 
     def initialize(*command)
-      puts "[#{self.class.to_s}] new command #{command.inspect}" if DBug::DEBUG
+      puts "[#{self.class.to_s}] new command #{command.inspect}" if DBug.debug?
       @command = command.flatten
     end
 
     def call(filename, silence = false)
       self.class.running!(true)
       notify_start
-      puts "[#{self.class.to_s}] running #{inject_filename(filename).inspect}" if DBug::DEBUG
+      puts "[#{self.class.to_s}] running #{inject_filename(filename).inspect}" if DBug.debug?
       Open3.popen3(*inject_filename(filename)) do |_, stdout, stderr, thread|
         @process = thread
         th_read stdout unless silence
         th_read stderr unless silence
         thread.join # don't exit until the external process is done
-        puts "[#{self.class.to_s}] running complete" if DBug::DEBUG
+        puts "[#{self.class.to_s}] running complete" if DBug.debug?
       end
     rescue Errno::ENOENT => e
       puts "Can not run: #{readable_command}"
@@ -47,7 +47,7 @@ module DBug
     end
 
     def notify_complete(success)
-      puts "[#{self.class.to_s}] notify #{success.inspect}" if DBug::DEBUG
+      puts "[#{self.class.to_s}] notify #{success.inspect}" if DBug.debug?
       if success
         DBug.queue << {exec_success: readable_command}
       else

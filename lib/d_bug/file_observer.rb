@@ -63,14 +63,14 @@ module DBug
 
     def notify(filename)
       if flood?(filename)
-        puts "[#{self.class.to_s}] flood event #{filename}" if DBug::DEBUG
+        puts "[#{self.class.to_s}] flood event #{filename}" if DBug.debug?
         return
       end
 
       self.class.last_event = [Time.now.to_i, filename]
 
       @event_filename = filename
-      puts "[#{self.class.to_s}] Ignored event #{filename}, suit is running" if DBug::CommandRunner.running? && DBug::DEBUG
+      puts "[#{self.class.to_s}] Ignored event #{filename}, suit is running" if DBug::CommandRunner.running? && DBug.debug?
       DBug.queue << { file_changed: filename } unless DBug::CommandRunner.running?
     end
 
@@ -80,8 +80,8 @@ module DBug
     end
 
     def valid?(filename)
-      puts "[#{self.class.to_s}] only for #{filename} #{include?(filename)}" if DBug::DEBUG
-      puts "[#{self.class.to_s}] exclude for #{filename} #{exclude?(filename)}" if DBug::DEBUG
+      puts "[#{self.class.to_s}] only for #{filename} #{include?(filename)}" if DBug.debug?
+      puts "[#{self.class.to_s}] exclude for #{filename} #{exclude?(filename)}" if DBug.debug?
 
       include?(filename) && !exclude?(filename)
     end

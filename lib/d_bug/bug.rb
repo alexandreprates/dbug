@@ -60,12 +60,12 @@ module DBug
 
     def notify(feedback = false, status = nil)
       status_code = PROTOCOL_STATUS.index(status || @status)
-      puts "[#{self.class.to_s}] Receive notification update" if DBug::DEBUG
+      puts "[#{self.class.to_s}] Receive notification update" if DBug.debug?
 
       if serial
         puts "notifing bug!" if feedback
         result = serial.write(status_code.chr)
-        puts "[#{self.class.to_s}] Send to bug #{status_code} => #{result}" if DBug::DEBUG
+        puts "[#{self.class.to_s}] Send to bug #{status_code} => #{result}" if DBug.debug?
       else
         puts "running in steath mode nobody will be notified!" if feedback
       end
@@ -83,13 +83,15 @@ module DBug
     end
 
     def serial
+      puts "[#{self.to_s}] using port #{port.inspect}" if DBug.debug?
       @serial ||= Serial.new port, 9600
     rescue RubySerial::Error
       @serial = nil
     end
 
     def port
-      Dir['/dev/serial/by-id/*FTDI*'][0]
+      return @port if @port && File.exist?(@port)
+      @port = Dir['/dev/serial/by-id/*FTDI*'].first
     end
 
   end
