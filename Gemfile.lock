@@ -10,7 +10,7 @@ GEM
   specs:
     ffi (1.11.1)
     minitest (5.11.3)
-    rake (10.5.0)
+    rake (13.0.6)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
     rdoc (6.2.0)
@@ -24,8 +24,8 @@ DEPENDENCIES
   bundler (~> 2.0)
   d_bug!
   minitest (~> 5.0)
-  rake (~> 10.0)
-  rdoc
+  rake (~> 13.0)
+  rdoc (~> 6.2)
 
 BUNDLED WITH
    2.0.2
